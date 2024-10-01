@@ -1,4 +1,4 @@
-namespace CodingTracker;
+namespace CodingTracker.Services;
 
 public enum MenuChoice
 {

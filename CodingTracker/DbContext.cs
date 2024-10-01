@@ -1,3 +1,4 @@
+using CodingTracker.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Data.Sqlite;
 using Dapper;
@@ -45,6 +46,47 @@ public class DbContext(IConfiguration configuration)
                 INSERT INTO CodingTracker (StartTime, EndTime, Duration)
                 VALUES (@StartTime, @EndTime, @Duration)";
             connection.Execute(addCodingSessionQuery, new { codingSession.StartTime, codingSession.EndTime, codingSession.Duration });
+        }
+        catch (SqliteException ex)
+        {
+            Console.WriteLine($"SQLite error: {ex.Message}");
+        }
+        finally
+        {
+            connection.Close();
+        }
+    }
+
+    public List<CodingSession> GetCodingSessions()
+    {
+        var connection = new SqliteConnection(_connectionString);
+        
+        try
+        {
+            connection.Open();
+            var getCodingSessionsQuery = "SELECT * FROM CodingTracker";
+            return connection.Query<CodingSession>(getCodingSessionsQuery).ToList();
+        }
+        catch (SqliteException ex)
+        {
+            Console.WriteLine($"SQLite error: {ex.Message}");
+            return new List<CodingSession>();
+        }
+        finally
+        {
+            connection.Close();
+        }
+    }
+    
+    public void DeleteCodingSession(int id)
+    {
+        var connection = new SqliteConnection(_connectionString);
+        
+        try
+        {
+            connection.Open();
+            var deleteCodingSessionQuery = "DELETE FROM CodingTracker WHERE Id = @Id";
+            connection.Execute(deleteCodingSessionQuery, new { Id = id });
         }
         catch (SqliteException ex)
         {

@@ -1,4 +1,6 @@
 ﻿using CodingTracker;
+using CodingTracker.Controllers;
+using CodingTracker.Services;
 using Microsoft.Extensions.Configuration;
 
 var configuration = new ConfigurationBuilder()

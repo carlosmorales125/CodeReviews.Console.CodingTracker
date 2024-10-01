@@ -1,6 +1,7 @@
+using CodingTracker.Models;
 using Spectre.Console;
 
-namespace CodingTracker;
+namespace CodingTracker.Services;
 
 public static class MenuService
 {
