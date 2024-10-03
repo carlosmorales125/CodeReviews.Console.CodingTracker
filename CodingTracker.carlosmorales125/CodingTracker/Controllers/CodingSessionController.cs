@@ -5,19 +5,21 @@ namespace CodingTracker.Controllers;
 
 public class CodingSessionController(DbContext dbContext)
 {
-    public void AddCodingSession(CodingSession codingSession)
+    public ActionMessage AddCodingSession(CodingSession codingSession)
     {
-        dbContext.AddCodingSession(codingSession);
+        return dbContext.AddCodingSession(codingSession);
     }
     
-    public void EditCodingSession(CodingSession codingSession)
+    public ActionMessage EditCodingSession(CodingSession codingSession)
     {
-        Console.WriteLine("Edit coding session");
+        return dbContext.EditCodingSession(codingSession);
     } 
     
-    public void DeleteCodingSession(int id)
+    public ActionMessage DeleteCodingSession(int id)
     {
-        dbContext.DeleteCodingSession(id);
+        return dbContext.CheckIfIdExist(id).IsError 
+            ? dbContext.CheckIfIdExist(id) 
+            : dbContext.DeleteCodingSession(id);
     }
     
     public void ViewCodingSessions()
@@ -50,5 +52,10 @@ public class CodingSessionController(DbContext dbContext)
 
             AnsiConsole.Write(table);
         }
+    }
+    
+    public ActionMessage CheckIfCodingSessionExists(int id)
+    {
+        return dbContext.CheckIfIdExist(id);
     }
 }

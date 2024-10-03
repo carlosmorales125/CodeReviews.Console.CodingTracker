@@ -22,15 +22,25 @@ while (true)
     {
         case MenuChoice.AddCodingSession:
             var newCodingSession = MenuService.PresentAddCodingSessionMenu();
-            codingSessionController.AddCodingSession(newCodingSession);
+            var addNewCoddingSessionMessage = codingSessionController.AddCodingSession(newCodingSession);
+            MenuService.PresentActionMessage(addNewCoddingSessionMessage);
             break;
         case MenuChoice.EditCodingSession:
-            
-            //codingSessionController.EditCodingSession(editCodingSession);
+            var editCodingSessionId = MenuService.PresentGetIdMenu();
+            var codingSessionExists = codingSessionController.CheckIfCodingSessionExists(editCodingSessionId);
+            if (codingSessionExists.IsError)
+            {
+                MenuService.PresentActionMessage(codingSessionExists);
+                break;
+            }
+            var editCodingSession = MenuService.PresentEditCodingSessionMenu(editCodingSessionId);
+            var editCodingSessionMessage = codingSessionController.EditCodingSession(editCodingSession);
+            MenuService.PresentActionMessage(editCodingSessionMessage);
             break;
         case MenuChoice.DeleteCodingSession:
             var id = MenuService.PresentGetIdMenu();
-            codingSessionController.DeleteCodingSession(1);
+            var deleteCodingSessionActionMessage = codingSessionController.DeleteCodingSession(id);
+            MenuService.PresentActionMessage(deleteCodingSessionActionMessage);
             break;
         case MenuChoice.ViewCodingSessions:
             codingSessionController.ViewCodingSessions();
@@ -39,6 +49,7 @@ while (true)
             MenuService.PresentGoodbyeMessage();
             return;
         default:
+            Console.Clear();
             Console.WriteLine("Invalid choice. Please try again.");
             break;
     }

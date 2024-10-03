@@ -16,7 +16,7 @@ public static class MenuService
     public static void PresentGoodbyeMessage()
     {
         AnsiConsole.Write(
-            new FigletText("Goodbye! THANKS FOR USING THE CODING TRACKER!")
+            new FigletText("GOODBYE! AND THANKS FOR USING THE CODING TRACKER!")
                 .LeftJustified()
                 .Color(Color.Green));
     }
@@ -86,5 +86,30 @@ public static class MenuService
     public static int PresentGetIdMenu()
     {
         return AnsiConsole.Ask<int>("Enter the id:");
+    }
+    
+    public static void PresentActionMessage(ActionMessage actionMessage)
+    {
+        var panel = new Panel(actionMessage.Message)
+        {
+            Border = BoxBorder.Double,
+            Padding = new Padding(2, 1, 2, 1),
+            BorderStyle = new Style(foreground: actionMessage.IsError ? Color.Red : Color.Green)
+        };
+        
+        AnsiConsole.Write(panel);
+    }
+    
+    public static CodingSession PresentEditCodingSessionMenu(int id)
+    {
+        var startTime = AnsiConsole.Ask<int>("Enter the start time:");
+        var endTime = AnsiConsole.Ask<int>("Enter the end time:");
+        
+        return new CodingSession()
+        {
+            Id = id,
+            StartTime = startTime,
+            EndTime = endTime
+        };
     }
 }
