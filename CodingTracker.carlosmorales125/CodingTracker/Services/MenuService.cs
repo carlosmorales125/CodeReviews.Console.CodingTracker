@@ -1,4 +1,5 @@
 using CodingTracker.Models;
+using CodingTracker.Validators;
 using Spectre.Console;
 
 namespace CodingTracker.Services;
@@ -76,10 +77,18 @@ public static class MenuService
 
     public static CodingSession PresentAddCodingSessionMenu()
     {
-        return new CodingSession
+        var startTime = PresentTimeInputMenu("start");
+        long endTime;
+        
+        do
         {
-            StartTime = AnsiConsole.Ask<int>("Enter the start time:"),
-            EndTime = AnsiConsole.Ask<int>("Enter the end time:")
+            endTime = PresentTimeInputMenu("end");
+        } while (!TimeValidator.IsEndTimeGreaterThanStartTime(startTime, endTime));
+        
+        return new CodingSession()
+        {
+            StartTime = startTime,
+            EndTime = endTime
         };
     }
     
@@ -102,8 +111,13 @@ public static class MenuService
     
     public static CodingSession PresentEditCodingSessionMenu(int id)
     {
-        var startTime = AnsiConsole.Ask<int>("Enter the start time:");
-        var endTime = AnsiConsole.Ask<int>("Enter the end time:");
+        var startTime = PresentTimeInputMenu("start");
+        long endTime;
+        
+        do
+        {
+            endTime = PresentTimeInputMenu("end");
+        } while (!TimeValidator.IsEndTimeGreaterThanStartTime(startTime, endTime));
         
         return new CodingSession()
         {
@@ -111,5 +125,38 @@ public static class MenuService
             StartTime = startTime,
             EndTime = endTime
         };
+    }
+
+    private static long PresentTimeInputMenu(string startOrEnd)
+    {
+        var hour = 13;
+        var minute = 61;
+        var amOrPm = "";
+        
+        while (!TimeValidator.IsHourValid(hour))
+        {
+            hour = AnsiConsole.Ask<int>($"Enter the {startOrEnd} hour (between 1 and 12):");
+        }
+        
+        while (!TimeValidator.IsMinuteValid(minute))
+        {
+            minute = AnsiConsole.Ask<int>($"Enter the {startOrEnd} minute (between 0 and 59):");
+        }
+        
+        while (!TimeValidator.IsAmPmValid(amOrPm))
+        {
+            amOrPm = AnsiConsole.Ask<string>("Enter AM or PM:");
+        }
+        
+        if (TimeValidator.IsPm(amOrPm) && hour != 12)
+        {
+            hour += 12;
+        }
+        
+        var today = DateTime.Today;
+        
+        var startTime = new DateTime(today.Year, today.Month, today.Day, hour, minute, 0);
+
+        return startTime.ToBinary();
     }
 }
