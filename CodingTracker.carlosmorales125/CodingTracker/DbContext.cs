@@ -20,8 +20,7 @@ public class DbContext(IConfiguration configuration)
                     CREATE TABLE IF NOT EXISTS CodingTracker (
                         Id INTEGER PRIMARY KEY AUTOINCREMENT,
                         StartTime INTEGER NOT NULL,
-                        EndTime INTEGER NOT NULL,
-                        Duration INTEGER NOT NULL
+                        EndTime INTEGER NOT NULL
                     )";
             connection.Execute(createTableQuery);
         }
@@ -43,9 +42,9 @@ public class DbContext(IConfiguration configuration)
         {
             connection.Open();
             var addCodingSessionQuery = @"
-                INSERT INTO CodingTracker (StartTime, EndTime, Duration)
-                VALUES (@StartTime, @EndTime, @Duration)";
-            connection.Execute(addCodingSessionQuery, new { codingSession.StartTime, codingSession.EndTime, codingSession.Duration });
+                INSERT INTO CodingTracker (StartTime, EndTime)
+                VALUES (@StartTime, @EndTime)";
+            connection.Execute(addCodingSessionQuery, new { codingSession.StartTime, codingSession.EndTime});
         }
         catch (SqliteException ex)
         {
@@ -139,9 +138,9 @@ public class DbContext(IConfiguration configuration)
             connection.Open();
             var editCodingSessionQuery = @"
                 UPDATE CodingTracker
-                SET StartTime = @StartTime, EndTime = @EndTime, Duration = @Duration
+                SET StartTime = @StartTime, EndTime = @EndTime
                 WHERE Id = @Id";
-            connection.Execute(editCodingSessionQuery, new { codingSession.StartTime, codingSession.EndTime, codingSession.Duration, codingSession.Id });
+            connection.Execute(editCodingSessionQuery, new { codingSession.StartTime, codingSession.EndTime, codingSession.Id });
         }
         catch (SqliteException ex)
         {

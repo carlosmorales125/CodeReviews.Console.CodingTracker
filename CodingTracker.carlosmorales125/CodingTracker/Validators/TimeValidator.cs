@@ -10,5 +10,7 @@ public class TimeValidator
     
     public static bool IsPm(string pm) => pm.ToUpper() is "PM";
     
+    public static bool IsAm(string am) => am.ToUpper() is "AM";
+    
     public static bool IsEndTimeGreaterThanStartTime(long startTime, long endTime) => endTime > startTime;
 }

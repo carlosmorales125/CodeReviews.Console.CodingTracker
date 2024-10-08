@@ -2,6 +2,7 @@
 using CodingTracker.Controllers;
 using CodingTracker.Services;
 using Microsoft.Extensions.Configuration;
+using Spectre.Console;
 
 var configuration = new ConfigurationBuilder()
     .SetBasePath(AppContext.BaseDirectory)
@@ -21,11 +22,13 @@ while (true)
     switch (choice)
     {
         case MenuChoice.AddCodingSession:
+            AnsiConsole.Clear();
             var newCodingSession = MenuService.PresentAddCodingSessionMenu();
             var addNewCoddingSessionMessage = codingSessionController.AddCodingSession(newCodingSession);
             MenuService.PresentActionMessage(addNewCoddingSessionMessage);
             break;
         case MenuChoice.EditCodingSession:
+            AnsiConsole.Clear();
             var editCodingSessionId = MenuService.PresentGetIdMenu();
             var codingSessionExists = codingSessionController.CheckIfCodingSessionExists(editCodingSessionId);
             if (codingSessionExists.IsError)
@@ -38,19 +41,21 @@ while (true)
             MenuService.PresentActionMessage(editCodingSessionMessage);
             break;
         case MenuChoice.DeleteCodingSession:
+            AnsiConsole.Clear();
             var id = MenuService.PresentGetIdMenu();
             var deleteCodingSessionActionMessage = codingSessionController.DeleteCodingSession(id);
             MenuService.PresentActionMessage(deleteCodingSessionActionMessage);
             break;
         case MenuChoice.ViewCodingSessions:
+            AnsiConsole.Clear();
             codingSessionController.ViewCodingSessions();
             break;
         case MenuChoice.Exit:
+            AnsiConsole.Clear();
             MenuService.PresentGoodbyeMessage();
             return;
         default:
-            Console.Clear();
-            Console.WriteLine("Invalid choice. Please try again.");
+            MenuService.DisplayInvalidInputMessage();
             break;
     }
 }

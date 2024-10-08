@@ -43,11 +43,11 @@ public class CodingSessionController(DbContext dbContext)
             table.AddColumn("Id");
             table.AddColumn("Start Time");
             table.AddColumn("End Time");
-            table.AddColumn("Duration");
+            table.AddColumn("Duration (hh:mm)");
 
             foreach (var codingSession in codingSessions)
             {
-                table.AddRow(codingSession.Id.ToString(), codingSession.StartTime.ToString(), codingSession.EndTime.ToString(), codingSession.Duration.ToString());
+                table.AddRow(codingSession.Id.ToString(), LongToTimeString(codingSession.StartTime), LongToTimeString(codingSession.EndTime), codingSession.Duration);
             }
 
             AnsiConsole.Write(table);
@@ -57,5 +57,10 @@ public class CodingSessionController(DbContext dbContext)
     public ActionMessage CheckIfCodingSessionExists(int id)
     {
         return dbContext.CheckIfIdExist(id);
+    }
+    
+    private static string LongToTimeString(long time)
+    {
+        return DateTime.FromBinary(time).ToString("hh:mm tt");
     }
 }

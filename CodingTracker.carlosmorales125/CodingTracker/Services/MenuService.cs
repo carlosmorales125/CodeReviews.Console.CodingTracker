@@ -16,6 +16,8 @@ public static class MenuService
     
     public static void PresentGoodbyeMessage()
     {
+        AnsiConsole.Clear();
+        
         AnsiConsole.Write(
             new FigletText("GOODBYE! AND THANKS FOR USING THE CODING TRACKER!")
                 .LeftJustified()
@@ -41,12 +43,6 @@ public static class MenuService
             Justification = Justify.Left,
             Style = new Style(foreground: Color.Green)
         };
-
-        var errorRule = new Rule("Invalid choice. Please try again.")
-        {
-            Justification = Justify.Left,
-            Style = new Style(foreground: Color.Red),
-        };
         
         while (true)
         {
@@ -71,7 +67,8 @@ public static class MenuService
                         return MenuChoice.Exit;
                 }
             }
-            AnsiConsole.Write(errorRule);
+            
+            DisplayInvalidInputMessage();
         }
     }
 
@@ -80,10 +77,17 @@ public static class MenuService
         var startTime = PresentTimeInputMenu("start");
         long endTime;
         
-        do
+        while (true)
         {
             endTime = PresentTimeInputMenu("end");
-        } while (!TimeValidator.IsEndTimeGreaterThanStartTime(startTime, endTime));
+            
+            if (TimeValidator.IsEndTimeGreaterThanStartTime(startTime, endTime))
+            {
+                break;
+            }
+            
+            DisplayInvalidInputMessage("End time must be greater than start time. Please try again.");
+        }
         
         return new CodingSession()
         {
@@ -99,6 +103,8 @@ public static class MenuService
     
     public static void PresentActionMessage(ActionMessage actionMessage)
     {
+        AnsiConsole.Clear();
+        
         var panel = new Panel(actionMessage.Message)
         {
             Border = BoxBorder.Double,
@@ -129,23 +135,38 @@ public static class MenuService
 
     private static long PresentTimeInputMenu(string startOrEnd)
     {
-        var hour = 13;
-        var minute = 61;
-        var amOrPm = "";
+        int hour;
+        int minute;
+        string amOrPm;
         
-        while (!TimeValidator.IsHourValid(hour))
+        while (true)
         {
             hour = AnsiConsole.Ask<int>($"Enter the {startOrEnd} hour (between 1 and 12):");
+            if (TimeValidator.IsHourValid(hour))
+            {
+                break;
+            }
+            DisplayInvalidInputMessage();
         }
         
-        while (!TimeValidator.IsMinuteValid(minute))
+        while (true)
         {
             minute = AnsiConsole.Ask<int>($"Enter the {startOrEnd} minute (between 0 and 59):");
+            if (TimeValidator.IsMinuteValid(minute))
+            {
+                break;
+            }
+            DisplayInvalidInputMessage();
         }
         
-        while (!TimeValidator.IsAmPmValid(amOrPm))
+        while (true)
         {
             amOrPm = AnsiConsole.Ask<string>("Enter AM or PM:");
+            if (TimeValidator.IsAmPmValid(amOrPm))
+            {
+                break;
+            }
+            DisplayInvalidInputMessage();
         }
         
         if (TimeValidator.IsPm(amOrPm) && hour != 12)
@@ -153,10 +174,29 @@ public static class MenuService
             hour += 12;
         }
         
+        if (TimeValidator.IsAm(amOrPm) && hour == 12)
+        {
+            hour = 0;
+        }
+        
         var today = DateTime.Today;
         
         var startTime = new DateTime(today.Year, today.Month, today.Day, hour, minute, 0);
 
         return startTime.ToBinary();
+    }
+    
+    public static void DisplayInvalidInputMessage(string message = "Invalid input. Please try again.")
+    {
+        AnsiConsole.Clear();
+        
+        var panel = new Panel(message)
+        {
+            Border = BoxBorder.Double,
+            Padding = new Padding(2, 1, 2, 1),
+            BorderStyle = new Style(foreground: Color.Red)
+        };
+        
+        AnsiConsole.Write(panel);
     }
 }
